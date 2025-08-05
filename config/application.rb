@@ -40,5 +40,11 @@ module HsCodeApi
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+    # Add autoload paths for custom directories
+    config.autoload_paths << Rails.root.join("lib")
+
+    # Configure Sidekiq as the Active Job backend
+    config.active_job.queue_adapter = :sidekiq
   end
 end

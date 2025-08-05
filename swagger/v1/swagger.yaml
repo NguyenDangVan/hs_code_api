@@ -1,0 +1,342 @@
+openapi: 3.0.0
+info:
+  title: HS Code API
+  description: API for managing HS (Harmonized System) codes with read-only operations
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@example.com
+
+servers:
+  - url: http://localhost:3000
+    description: Development server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: User ID
+        email:
+          type: string
+          format: email
+          description: User email address
+        created_at:
+          type: string
+          format: date-time
+          description: User creation timestamp
+        updated_at:
+          type: string
+          format: date-time
+          description: User last update timestamp
+
+    HsCode:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: HS Code ID
+        code:
+          type: string
+          description: HS Code (e.g., 0101.10.00)
+        description:
+          type: string
+          description: Description of the HS code
+        category:
+          type: string
+          description: Category of the HS code
+        unit:
+          type: string
+          description: Unit of measurement
+        rate:
+          type: number
+          format: float
+          description: Tax rate
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updated_at:
+          type: string
+          format: date-time
+          description: Last update timestamp
+
+    Pagination:
+      type: object
+      properties:
+        current_page:
+          type: integer
+          description: Current page number
+        total_pages:
+          type: integer
+          description: Total number of pages
+        total_count:
+          type: integer
+          description: Total number of records
+        per_page:
+          type: integer
+          description: Number of records per page
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+
+paths:
+  /api/v1/health:
+    get:
+      summary: Health Check
+      description: Check if the API is running
+      tags:
+        - Health
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /api/v1/auth/register:
+    post:
+      summary: Register User
+      description: Register a new user account
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+                - password_confirmation
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: User email address
+                password:
+                  type: string
+                  minLength: 6
+                  description: User password
+                password_confirmation:
+                  type: string
+                  description: Password confirmation
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User registered successfully
+                  token:
+                    type: string
+                    description: JWT authentication token
+                  user:
+                    $ref: '#/components/schemas/User'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/v1/auth/login:
+    post:
+      summary: Login User
+      description: Authenticate user and get JWT token
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: User email address
+                password:
+                  type: string
+                  description: User password
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Login successful
+                  token:
+                    type: string
+                    description: JWT authentication token
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/v1/hs_codes:
+    get:
+      summary: List HS Codes
+      description: Get paginated list of HS codes with optional search
+      tags:
+        - HS Codes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: per_page
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+        - name: search
+          in: query
+          description: Search term for code, description, or category
+          required: false
+          schema:
+            type: string
+            minLength: 2
+      responses:
+        '200':
+          description: List of HS codes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  hs_codes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HsCode'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/v1/hs_codes/{id}:
+    get:
+      summary: Get HS Code
+      description: Get a specific HS code by ID
+      tags:
+        - HS Codes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: HS Code ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: HS Code details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HsCode'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: HS Code not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/v1/hs_codes/export:
+    get:
+      summary: Export HS Codes
+      description: Export HS codes to CSV format
+      tags:
+        - HS Codes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: search
+          in: query
+          description: Search term for filtering
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Export job started
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Export job started successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+tags:
+  - name: Health
+    description: Health check endpoints
+  - name: Authentication
+    description: User authentication endpoints
+  - name: HS Codes
+    description: HS Code management endpoints 
