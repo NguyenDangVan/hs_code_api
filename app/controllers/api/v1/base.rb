@@ -10,7 +10,6 @@ module Api
       mount Api::V1::HsCodes
       mount Api::V1::Favourites
 
-      # Health check endpoint
       get :health do
         { status: "ok", timestamp: Time.current }
       end
