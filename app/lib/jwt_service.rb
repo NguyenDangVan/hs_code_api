@@ -1,6 +1,6 @@
 class JwtService
-  SECRET_KEY = Rails.application.credentials.secret_key_base || 'your-secret-key'
-  ALGORITHM = 'HS256'
+  SECRET_KEY = Rails.application.credentials.secret_key_base || "your-secret-key"
+  ALGORITHM = "HS256"
 
   def self.encode(payload)
     JWT.encode(payload, SECRET_KEY, ALGORITHM)
@@ -23,6 +23,6 @@ class JwtService
 
   def self.extract_user_id(token)
     payload = decode(token)
-    payload&.dig('user_id')
+    payload&.dig("user_id")
   end
-end 
+end

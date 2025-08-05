@@ -36,26 +36,22 @@ gem "thruster", require: false
 gem "rack-cors"
 
 # Grape for API
-gem 'grape'
+gem "grape"
 
 # Swagger documentation
-gem 'rswag-api'
-gem 'rswag-ui'
+gem "rswag-api"
+gem "rswag-ui"
 
 # JWT for authentication
-gem 'jwt'
-
-# Sidekiq for background jobs
-gem 'sidekiq'
-
-# For CSV import/export
-gem 'smarter_csv'
+gem "jwt"
 
 # For pagination
-gem 'kaminari'
+gem "kaminari"
 
 # For JSON API serialization
-gem 'jsonapi-serializer'
+gem "jsonapi-serializer"
+
+gem "selenium-webdriver"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -66,13 +62,18 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+  gem "rubocop-rails", require: false
+  gem "rubocop-rspec", require: false
+  gem "rubocop-performance", require: false
 
   # RSpec for testing
-  gem 'rspec-rails'
+  gem "rspec-rails"
+
+  gem "rswag-specs"
 
   # Factory Bot for testing
-  gem 'factory_bot_rails'
+  gem "factory_bot_rails"
 
   # Faker for testing
-  gem 'faker'
+  gem "faker"
 end

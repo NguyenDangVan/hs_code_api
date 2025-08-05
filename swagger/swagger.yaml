@@ -376,6 +376,42 @@
         }
       }
     },
+    "/api/v1/hs_codes/export": {
+      "get": {
+        "summary": "Export HS codes",
+        "tags": [
+          "HS Codes"
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "description": "Search term for filtering",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "export started",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/favourites": {
       "get": {
         "summary": "Get user favourites",

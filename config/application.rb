@@ -43,8 +43,5 @@ module HsCodeApi
 
     # Add autoload paths for custom directories
     config.autoload_paths << Rails.root.join("lib")
-
-    # Configure Sidekiq as the Active Job backend
-    config.active_job.queue_adapter = :sidekiq
   end
 end

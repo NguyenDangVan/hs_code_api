@@ -1,7 +1,7 @@
 class HsCodeSerializer
   include JSONAPI::Serializer
 
-  attributes :id, :code, :description, :category, :unit, :rate, :created_at, :updated_at
+  attributes :id, :code, :description, :category, :unit, :tariff_rate, :created_at, :updated_at
 
   # Custom serialization for single object
   def self.serialize(hs_code)
@@ -11,7 +11,7 @@ class HsCodeSerializer
       description: hs_code.description,
       category: hs_code.category,
       unit: hs_code.unit,
-      rate: hs_code.rate,
+      tariff_rate: hs_code.tariff_rate,
       created_at: hs_code.created_at,
       updated_at: hs_code.updated_at
     }
@@ -21,4 +21,4 @@ class HsCodeSerializer
   def self.serialize_collection(hs_codes)
     hs_codes.map { |hs_code| serialize(hs_code) }
   end
-end 
+end

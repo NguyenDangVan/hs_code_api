@@ -10,9 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_04_174219) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_05_031911) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "favourites", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "hs_code_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["hs_code_id"], name: "index_favourites_on_hs_code_id"
+    t.index ["user_id"], name: "index_favourites_on_user_id"
+  end
 
   create_table "hs_codes", force: :cascade do |t|
     t.string "code"
@@ -34,4 +43,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_04_174219) do
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
   end
+
+  add_foreign_key "favourites", "hs_codes"
+  add_foreign_key "favourites", "users"
 end
