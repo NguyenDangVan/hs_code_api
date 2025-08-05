@@ -11,19 +11,23 @@ RSpec.describe 'Auth API', type: :request do
     end
 
     it 'registers a new user' do
-      post '/api/v1/auth/register', params: valid_params
+      post '/api/v1/auth/register', params: valid_params, headers: { 'Accept' => 'application/json' }
 
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(:created)
       json = JSON.parse(response.body)
       expect(json['message']).to eq('User registered successfully')
       expect(json['token']).to be_present
-      expect(json['user']['email']).to eq('test@example.com')
+      expect(json['user']['data']['attributes']['email']).to eq('test@example.com')
     end
 
     it 'returns error for invalid params' do
-      post '/api/v1/auth/register', params: { email: 'invalid' }
+      post '/api/v1/auth/register', params: {
+        email: 'invalid-email',
+        password: '123',
+        password_confirmation: '123'
+      }, headers: { 'Accept' => 'application/json' }
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
     end
   end
 
@@ -37,7 +41,7 @@ RSpec.describe 'Auth API', type: :request do
       post '/api/v1/auth/login', params: {
         email: 'test@example.com',
         password: 'password123'
-      }
+      }, headers: { 'Accept' => 'application/json' }
 
       expect(response).to have_http_status(:ok)
       json = JSON.parse(response.body)
@@ -49,7 +53,7 @@ RSpec.describe 'Auth API', type: :request do
       post '/api/v1/auth/login', params: {
         email: 'test@example.com',
         password: 'wrongpassword'
-      }
+      }, headers: { 'Accept' => 'application/json' }
 
       expect(response).to have_http_status(:unauthorized)
     end

@@ -17,6 +17,7 @@ module Api
 
           if user.save
             token = JwtService.encode(user_id: user.id)
+            status 201
             {
               message: "User registered successfully",
               token: token,
@@ -37,6 +38,7 @@ module Api
 
           if user&.authenticate(params[:password])
             token = JwtService.encode(user_id: user.id)
+            status 200
             {
               message: "Login successful",
               token: token,

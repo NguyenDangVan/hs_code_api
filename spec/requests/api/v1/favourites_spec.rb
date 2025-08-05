@@ -2,9 +2,9 @@ require 'rails_helper'
 
 RSpec.describe 'Favourites API', type: :request do
   let!(:user) { User.create(email: 'test@example.com', password: 'password123') }
-  let!(:hs_code) { HsCode.create(code: '123456', description: 'Test Product', category: 'Electronics', unit: 'pcs', rate: 10.0) }
+  let!(:hs_code) { HsCode.create(code: '123456', description: 'Test Product', category: 'Electronics', unit: 'pcs', tariff_rate: 10.0) }
   let(:token) { JwtService.encode(user_id: user.id) }
-  let(:headers) { { 'Authorization' => "Bearer #{token}" } }
+  let(:headers) { { 'Authorization' => "Bearer #{token}", 'Accept' => 'application/json' } }
 
   describe 'GET /api/v1/favourites' do
     context 'with valid token' do
@@ -29,7 +29,7 @@ RSpec.describe 'Favourites API', type: :request do
 
     context 'without token' do
       it 'returns unauthorized' do
-        get '/api/v1/favourites'
+        get '/api/v1/favourites', headers: { 'Accept' => 'application/json' }
 
         expect(response).to have_http_status(:unauthorized)
       end
@@ -41,7 +41,7 @@ RSpec.describe 'Favourites API', type: :request do
       it 'adds HS code to favourites' do
         post '/api/v1/favourites', params: { hs_code_id: hs_code.id }, headers: headers
 
-        expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(:created)
         json = JSON.parse(response.body)
         expect(json['message']).to eq('HS Code added to favourites successfully')
         expect(json['favourite']).to be_present
@@ -51,13 +51,13 @@ RSpec.describe 'Favourites API', type: :request do
         Favourite.create(user: user, hs_code: hs_code)
         post '/api/v1/favourites', params: { hs_code_id: hs_code.id }, headers: headers
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 
     context 'without token' do
       it 'returns unauthorized' do
-        post '/api/v1/favourites', params: { hs_code_id: hs_code.id }
+        post '/api/v1/favourites', params: { hs_code_id: hs_code.id }, headers: { 'Accept' => 'application/json' }
 
         expect(response).to have_http_status(:unauthorized)
       end
@@ -84,7 +84,7 @@ RSpec.describe 'Favourites API', type: :request do
 
     context 'without token' do
       it 'returns unauthorized' do
-        delete "/api/v1/favourites/#{hs_code.id}"
+        delete "/api/v1/favourites/#{hs_code.id}", headers: { 'Accept' => 'application/json' }
 
         expect(response).to have_http_status(:unauthorized)
       end
@@ -113,7 +113,7 @@ RSpec.describe 'Favourites API', type: :request do
 
     context 'without token' do
       it 'returns unauthorized' do
-        get "/api/v1/favourites/#{hs_code.id}"
+        get "/api/v1/favourites/#{hs_code.id}", headers: { 'Accept' => 'application/json' }
 
         expect(response).to have_http_status(:unauthorized)
       end
